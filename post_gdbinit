@@ -1,0 +1,11 @@
+# ~/.gdbinit
+# source ~/Documents/configs/post_gdbinit
+
+define hookpost-file
+	with pagination off -- focus cmd
+end
+
+define hook-next
+	refresh
+end
+
