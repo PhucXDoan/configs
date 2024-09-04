@@ -4,7 +4,7 @@
 " Some convenient shortcuts.
 exec "command! RC :e" . expand('<sfile>:p')
 command! R   :! clear && ./src/cli.py clean > /dev/null && ./src/cli.py build -quiet && ./src/cli.py test && ./src/cli.py upload && clear && ./src/cli.py listen
-command! C   :! clear && ./src/cli.py clean > /dev/null && ./src/cli.py build
+command! C   :! clear && ./src/cli.py clean > /dev/null && ./src/cli.py build        && ./src/cli.py test
 command! T   :! clear && ./src/cli.py test
 command! D   :! clear && ./src/cli.py test && ./src/cli.py listen
 command! E   :w | Explore
@@ -45,15 +45,15 @@ function Configure_Syntax(kind)
 	syntax match ExWhitespace /\v\S\zs\t\ze/ containedin=ALL " Non-whitespace followed by a tab.
 
 	if a:kind == 'c'
-		syntax match  Comment                                     /\v\/\/.*$/
-		syntax region Comment                                     start=/\v\/\*/ end=/\v\*\//
-		syntax region String      transparent                     start=/\v\"/   end=/\v\"/
-		syntax match  Debug       containedin=ALL                 /\v<(_)*DEBUG(_)?\w*/
-		syntax match  MetaBlock                                   /\v(^\s*\/\*\s*\#meta>.*\n\s*)\/\*\_.{-}\*\//
-		syntax match  MetaBody    contained containedin=MetaBlock /\v(^\s*\/\*\s*\#meta>.*\n\s*)@<=\s*\/\*\_.{-}\*\//
-		syntax match  MetaBlock   contains=Comment                /\v(^\s*\#include\s+\"(\w|\.)*\.meta\".*\n\s*)\/\*\_.{-}\*\//
-		syntax match  MetaBody    contained containedin=MetaBlock /\v(^\s*\#include\s+\"(\w|\.)*\.meta\".*\n\s*)@<=\/\*\_.{-}\*\//
-		syntax match  MetaComment contained containedin=MetaBody  /\v(^|\s)\zs\#.*$/
+		syntax match  Comment                                                     /\v\/\/.*$/
+		syntax region Comment                                                     start=/\v\/\*/ end=/\v\*\//
+		syntax region String      transparent                                     start=/\v\"/   end=/\v\"/
+		syntax match  Debug       containedin=ALLBUT,Comment                      /\v<(_)*DEBUG(_)?\w*/
+		syntax match  MetaBlock                                                   /\v(^\s*\/\*\s*\#meta>.*\n\s*)\/\*\_.{-}\*\//
+		syntax match  MetaBody    contained containedin=MetaBlock contains=Assert /\v(^\s*\/\*\s*\#meta>.*\n\s*)@<=\s*\/\*\_.{-}\*\//
+		syntax match  MetaBlock   contains=Comment                                /\v(^\s*\#include\s+\"(\w|\.)*\.meta\".*\n\s*)\/\*\_.{-}\*\//
+		syntax match  MetaBody    contained containedin=MetaBlock contains=Assert /\v(^\s*\#include\s+\"(\w|\.)*\.meta\".*\n\s*)@<=\/\*\_.{-}\*\//
+		syntax match  MetaComment contained containedin=MetaBody                  /\v(^|\s)\zs\#.*$/
 	elseif a:kind == 'python'
 		syntax match  Comment /\v(^|\s)\zs\#.*$/
 	endif
