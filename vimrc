@@ -3,14 +3,13 @@
 
 " Some convenient shortcuts.
 exec "command! RC :e" . expand('<sfile>:p')
-command! R   :! clear && ./src/cli.py clean > /dev/null && ./src/cli.py build -quiet && ./src/cli.py test && ./src/cli.py upload && clear && ./src/cli.py listen
-command! C   :! clear && ./src/cli.py clean > /dev/null && ./src/cli.py build        && ./src/cli.py test
-command! T   :! clear && ./src/cli.py test
-command! D   :! clear && ./src/cli.py test && ./src/cli.py listen
 command! E   :w | Explore
 command! TMP :e ~/tmp
 
-" For ECE2514
+command! R :! clear && ./cli.py clean && ./cli.py build && ./cli.py flash && clear && ./cli.py listen
+command! C :! clear && ./cli.py clean && ./cli.py build
+command! T :! clear && ./cli.py test
+
 function ECE2514(program)
 	exec "command! R :! clear && cmake ./CMakeLists.txt -B ./build/ && (cd ./build/ && make && clear && ./" . a:program . ")"
 	exec "command! C :! clear && cmake ./CMakeLists.txt -B ./build/ && (cd ./build/ && make)"
@@ -30,6 +29,7 @@ set rulerformat=%(%=%l,%c%) " Determines the content of the ruler string, as dis
 set timeoutlen=0            " The time in milliseconds that is waited for a key code or mapped key sequence to complete. Otherwise, there'll be a delay after <ESC>.
 set nrformats+=alpha        " Single alphabetical characters will be incremented or decremented.
 set scrolloff=4             " Minimal number of screen lines to keep above and below the cursor.
+set shortmess-=S            " Show search count message when searching.
 syntax enable               " Switch on syntax highlighting.
 nohlsearch                  " Stop the highlighting for the 'hlsearch' option. This is set automatically due to 'set hlsearch'.
 
@@ -39,7 +39,7 @@ function Configure_Syntax(kind)
 	endif
 
 	syntax match ExWhitespace /\v^ /         containedin=ALL " Lines beginning with a space.
-	syntax match ExWhitespace /\v\s$/        containedin=ALL " Lines ending with a space.
+	syntax match ExWhitespace /\v\s+$/       containedin=ALL " Lines ending with a space.
 	syntax match ExWhitespace /\v\zs \ze\t/  containedin=ALL " Space followed by a tab.
 	syntax match ExWhitespace /\v\t\zs \ze/  containedin=ALL " Tab followed by a space.
 	syntax match ExWhitespace /\v\S\zs\t\ze/ containedin=ALL " Non-whitespace followed by a tab.
@@ -51,8 +51,8 @@ function Configure_Syntax(kind)
 		syntax match  Debug       containedin=ALLBUT,Comment                      /\v<(_)*DEBUG(_)?\w*/
 		syntax match  MetaBlock                                                   /\v(^\s*\/\*\s*\#meta>.*\n\s*)\/\*\_.{-}\*\//
 		syntax match  MetaBody    contained containedin=MetaBlock contains=Assert /\v(^\s*\/\*\s*\#meta>.*\n\s*)@<=\s*\/\*\_.{-}\*\//
-		syntax match  MetaBlock   contains=Comment                                /\v(^\s*\#include\s+\"(\w|\.)*\.meta\".*\n\s*)\/\*\_.{-}\*\//
-		syntax match  MetaBody    contained containedin=MetaBlock contains=Assert /\v(^\s*\#include\s+\"(\w|\.)*\.meta\".*\n\s*)@<=\/\*\_.{-}\*\//
+		syntax match  MetaBlock   contains=Comment                                /\v(^\s*\#include\s+\"(\w|\.|\-)*\.meta\".*\n\s*)\/\*\_.{-}\*\//
+		syntax match  MetaBody    contained containedin=MetaBlock contains=Assert /\v(^\s*\#include\s+\"(\w|\.|\-)*\.meta\".*\n\s*)@<=\/\*\_.{-}\*\//
 		syntax match  MetaComment contained containedin=MetaBody                  /\v(^|\s)\zs\#.*$/
 	elseif a:kind == 'python'
 		syntax match  Comment /\v(^|\s)\zs\#.*$/
@@ -74,7 +74,7 @@ function Configure_Syntax(kind)
 	highlight Search       ctermfg=59           ctermbg=230
 	highlight Tmp          ctermfg=black        ctermbg=yellow
 	highlight Debug        ctermfg=darkgray     ctermbg=none
-	highlight CursorLine   ctermfg=none         ctermbg=none    ctermul=223
+	highlight CursorLine   ctermfg=none         ctermbg=none    ctermul=203
 	highlight Todo         ctermfg=black        ctermbg=magenta
 	highlight Sorry        ctermfg=white        ctermbg=darkred
 	highlight String       ctermfg=lightmagenta ctermbg=none
@@ -84,7 +84,7 @@ function Configure_Syntax(kind)
 endfunction
 
 function Handle_File_Extension()
-	if &filetype == 'c' || &filetype == 'cpp' || expand('%:e') == 'meta'
+	if &filetype == 'c' || &filetype == 'cpp' || expand('%:e') == 'meta' || expand('%:e') == 'asset'
 		set  filetype=c
 		call Configure_Syntax('c')
 	elseif &filetype == 'python'
