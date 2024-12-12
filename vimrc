@@ -2,17 +2,16 @@
 " source ~/Documents/configs/vimrc
 
 " Some convenient shortcuts.
-exec "command! RC :e" . expand('<sfile>:p')
+exec "command! RC :e " . expand('<sfile>:p')
 command! E   :w | Explore
 command! TMP :e ~/tmp
 
-command! R :! clear && ./cli.py clean && ./cli.py build && ./cli.py flash && clear && ./cli.py listen
+command! R :! clear && ./cli.py clean && ./cli.py build && ./cli.py flash && ./cli.py listen
 command! C :! clear && ./cli.py clean && ./cli.py build
 command! T :! clear && ./cli.py test
 
-function ECE2514(program)
-	exec "command! R :! clear && cmake ./CMakeLists.txt -B ./build/ && (cd ./build/ && make && clear && ./" . a:program . ")"
-	exec "command! C :! clear && cmake ./CMakeLists.txt -B ./build/ && (cd ./build/ && make)"
+function ECE2514()
+	exec "command! C :! clear && cmake ./CMakeLists.txt -B ./build/ -G \"Unix Makefiles\" && (cd ./build/ && make)"
 endfunction
 
 " Use 'verymagic' mode automatically when performing a search.
