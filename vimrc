@@ -1,18 +1,18 @@
 " ~/.vimrc
 " source ~/Documents/configs/vimrc
 
+command! R :exec ":! clear && ./cli.py clean && ./cli.py build && ./cli.py flash " . g:TARGET
+command! C :exec ":! clear && ./cli.py clean && ./cli.py build"
+command! T :exec ":! clear && ./cli.py test"
+
+if has("win32")
+	set shell=pwsh
+endif
+
 " Some convenient shortcuts.
 exec "command! RC :e " . expand('<sfile>:p')
 command! E   :w | Explore
 command! TMP :e ~/tmp
-
-command! R :! clear && ./cli.py clean && ./cli.py build && ./cli.py flash && ./cli.py listen
-command! C :! clear && ./cli.py clean && ./cli.py build
-command! T :! clear && ./cli.py test
-
-function ECE2514()
-	exec "command! C :! clear && cmake ./CMakeLists.txt -B ./build/ -G \"Unix Makefiles\" && (cd ./build/ && make)"
-endfunction
 
 " Use 'verymagic' mode automatically when performing a search.
 nnoremap / /\v
@@ -29,6 +29,8 @@ set timeoutlen=0            " The time in milliseconds that is waited for a key 
 set nrformats+=alpha        " Single alphabetical characters will be incremented or decremented.
 set scrolloff=4             " Minimal number of screen lines to keep above and below the cursor.
 set shortmess-=S            " Show search count message when searching.
+set fileformat=unix         " Use LF endings.
+set fileformats=unix,dos    " "
 syntax enable               " Switch on syntax highlighting.
 nohlsearch                  " Stop the highlighting for the 'hlsearch' option. This is set automatically due to 'set hlsearch'.
 
@@ -48,10 +50,10 @@ function Configure_Syntax(kind)
 		syntax region Comment                                                     start=/\v\/\*/ end=/\v\*\//
 		syntax region String      transparent                                     start=/\v\"/   end=/\v\"/
 		syntax match  Debug       containedin=ALLBUT,Comment                      /\v<(_)*DEBUG(_)?\w*/
-		syntax match  MetaBlock                                                   /\v(^\s*\/\*\s*\#meta>.*\n\s*)\/\*\_.{-}\*\//
-		syntax match  MetaBody    contained containedin=MetaBlock contains=Assert /\v(^\s*\/\*\s*\#meta>.*\n\s*)@<=\s*\/\*\_.{-}\*\//
-		syntax match  MetaBlock   contains=Comment                                /\v(^\s*\#include\s+\"(\w|\.|\-)*\.meta\".*\n\s*)\/\*\_.{-}\*\//
-		syntax match  MetaBody    contained containedin=MetaBlock contains=Assert /\v(^\s*\#include\s+\"(\w|\.|\-)*\.meta\".*\n\s*)@<=\/\*\_.{-}\*\//
+		syntax match  MetaBlock                                                   /\v(^\s*\/\*\s*\#include>.*\n\s*)\/\*\_.{-}\*\//
+		syntax match  MetaBody    contained containedin=MetaBlock contains=Assert /\v(^\s*\/\*\s*\#include>.*\n\s*)@<=\s*\/\*\_.{-}\*\//
+		syntax match  MetaBlock   contains=Comment                                /\v(^\s*\#include\s+\"(\w|\.|\-)*\".*\n\s*)\/\*\_.{-}\*\//
+		syntax match  MetaBody    contained containedin=MetaBlock contains=Assert /\v(^\s*\#include\s+\"(\w|\.|\-)*\".*\n\s*)@<=\/\*\_.{-}\*\//
 		syntax match  MetaComment contained containedin=MetaBody                  /\v(^|\s)\zs\#.*$/
 	elseif a:kind == 'python'
 		syntax match  Comment /\v(^|\s)\zs\#.*$/
@@ -68,7 +70,7 @@ function Configure_Syntax(kind)
 	highlight Comment      ctermfg=cyan         ctermbg=none
 	highlight MetaBlock    ctermfg=lightgreen   ctermbg=none
 	highlight MetaBody     ctermfg=lightgreen   ctermbg=none
-	highlight MetaComment  ctermfg=green        ctermbg=none
+	highlight MetaComment  ctermfg=darkgreen    ctermbg=none
 	highlight Assert       ctermfg=yellow       ctermbg=none
 	highlight Search       ctermfg=59           ctermbg=230
 	highlight Tmp          ctermfg=black        ctermbg=yellow
