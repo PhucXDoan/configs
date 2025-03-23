@@ -1,6 +1,8 @@
 " ~/.vimrc
 " source ~/Documents/configs/vimrc
 
+let g:TARGET=""
+
 command! R :exec ":! clear && ./cli.py clean && ./cli.py build && ./cli.py flash " . g:TARGET
 command! C :exec ":! clear && ./cli.py clean && ./cli.py build"
 command! T :exec ":! clear && ./cli.py test"
@@ -50,10 +52,10 @@ function Configure_Syntax(kind)
 		syntax region Comment                                                     start=/\v\/\*/ end=/\v\*\//
 		syntax region String      transparent                                     start=/\v\"/   end=/\v\"/
 		syntax match  Debug       containedin=ALLBUT,Comment                      /\v<(_)*DEBUG(_)?\w*/
-		syntax match  MetaBlock                                                   /\v(^\s*\/\*\s*\#include>.*\n\s*)\/\*\_.{-}\*\//
-		syntax match  MetaBody    contained containedin=MetaBlock contains=Assert /\v(^\s*\/\*\s*\#include>.*\n\s*)@<=\s*\/\*\_.{-}\*\//
-		syntax match  MetaBlock   contains=Comment                                /\v(^\s*\#include\s+\"(\w|\.|\-)*\".*\n\s*)\/\*\_.{-}\*\//
-		syntax match  MetaBody    contained containedin=MetaBlock contains=Assert /\v(^\s*\#include\s+\"(\w|\.|\-)*\".*\n\s*)@<=\/\*\_.{-}\*\//
+		syntax match  MetaBlock                                                   /\v(^\s*\/\*\s*\#meta>.*\n\s*)\/\*\_.{-}\*\//
+		syntax match  MetaBody    contained containedin=MetaBlock contains=Assert /\v(^\s*\/\*\s*\#meta>.*\n\s*)@<=\s*\/\*\_.{-}\*\//
+		syntax match  MetaBlock   contains=Comment                                /\v(^\s*\#include\s+\"(\w|\.|\-)*\.meta\".*\n\s*)\/\*\_.{-}\*\//
+		syntax match  MetaBody    contained containedin=MetaBlock contains=Assert /\v(^\s*\#include\s+\"(\w|\.|\-)*\.meta\".*\n\s*)@<=\/\*\_.{-}\*\//
 		syntax match  MetaComment contained containedin=MetaBody                  /\v(^|\s)\zs\#.*$/
 	elseif a:kind == 'python'
 		syntax match  Comment /\v(^|\s)\zs\#.*$/
