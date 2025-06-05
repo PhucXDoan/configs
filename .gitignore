@@ -1,1 +1,14 @@
+__pycache__/
+build/
+data/
 *.swp
+.~lock*
+
+# KiCAD.
+*-backups/
+*.lck
+*.bak
+*.kicad_prl
+_autosave-*.kicad_pcb
+fp-info-cache
+\#auto_saved_files\#
