@@ -99,6 +99,12 @@ function OnFileType()
     " Coloring.
     "
 
+    if has("win32")
+        highlight CursorLine ctermfg=none ctermbg=none ctermul=yellow cterm=none
+    else
+        highlight CursorLine ctermfg=none ctermbg=none ctermul=yellow cterm=underline
+    endif
+
     highlight ExWhitespace ctermfg=white        ctermbg=red
     highlight Comment      ctermfg=cyan         ctermbg=none
     highlight Meta         ctermfg=lightgreen   ctermbg=none
@@ -108,7 +114,6 @@ function OnFileType()
     highlight Search       ctermfg=59           ctermbg=230
     highlight Tmp          ctermfg=black        ctermbg=yellow
     highlight Debug        ctermfg=darkgray     ctermbg=none
-    highlight CursorLine   ctermfg=none         ctermbg=none ctermul=yellow cterm=underline
     highlight Todo         ctermfg=black        ctermbg=magenta
     highlight Sorry        ctermfg=white        ctermbg=darkred
     highlight String       ctermfg=lightmagenta ctermbg=none
