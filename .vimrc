@@ -31,6 +31,7 @@ set nrformats+=alpha        " Allow alphabetical characters to be incremented/de
 set scrolloff=4             " Minimal number of screen lines to keep above and below the cursor.
 set shortmess-=S            " Show search count message when searching.
 set autoread                " Reread a file if it has changed on disk.
+set t_Co=256                " Allow 256 colors in terminal.
 
 " Use very-magic mode when searching.
 nnoremap / /\v
@@ -99,11 +100,7 @@ function OnFileType()
     " Coloring.
     "
 
-    if has("win32")
-        highlight CursorLine ctermfg=none ctermbg=none ctermul=yellow cterm=none
-    else
-        highlight CursorLine ctermfg=none ctermbg=none ctermul=yellow cterm=underline
-    endif
+    highlight CursorLine ctermfg=none ctermbg=none ctermul=yellow cterm=underline
 
     highlight ExWhitespace ctermfg=white        ctermbg=red
     highlight Comment      ctermfg=cyan         ctermbg=none
