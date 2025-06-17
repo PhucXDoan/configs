@@ -1,0 +1,14 @@
+# ~/.gdbinit
+# source ~/Documents/configs/.gdbinit_post
+
+define hookpost-file
+    with pagination off -- focus cmd
+end
+
+define hook-next
+    refresh
+end
+
+define hook-quit
+    set confirm off
+end
