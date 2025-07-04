@@ -90,7 +90,7 @@ function OnFileType()
     syntax match ExWhitespace /\v\s+$/ containedin=ALL " Lines ending with whitespace.
 
     if expand('%:e') == 'c' ||  expand('%:e') == 'h' || expand('%:e') == 'meta' ||  expand('%:e') == 'py'
-        syntax match   Assert /\v<(static_)?assert\w*>/
+        syntax match   Assert /\v(<(static_)?assert\w*|<gotoerr>)>/
         syntax match   Tmp    containedin=ALL /\v<TMP(_)?\w*>*/
         syntax keyword Todo   containedin=ALL TODO
         syntax keyword Sorry  containedin=ALL sorry
