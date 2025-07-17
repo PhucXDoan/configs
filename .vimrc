@@ -5,6 +5,7 @@ let g:TARGET=""
 
 command! R :exec ":! clear && ./cli.py clean && ./cli.py build " . g:TARGET " && ./cli.py flash " . g:TARGET
 command! C :exec ":! clear && ./cli.py clean && ./cli.py build " . g:TARGET
+command! M :exec ":! clear && ./cli.py clean && ./cli.py build --metapreprocess-only"
 command! T :exec ":! clear && ./cli.py test"
 
 if has("win32")
@@ -90,7 +91,7 @@ function OnFileType()
     syntax match ExWhitespace /\v\s+$/ containedin=ALL " Lines ending with whitespace.
 
     if expand('%:e') == 'c' ||  expand('%:e') == 'h' || expand('%:e') == 'meta' ||  expand('%:e') == 'py'
-        syntax match   Assert /\v(<(static_)?assert\w*|<gotoerr>)>/
+        syntax match   Assert /\v(<(static_)?assert\w*|<ret(_\w*)?>|<panic>)/
         syntax match   Tmp    containedin=ALL /\v<TMP(_)?\w*>*/
         syntax keyword Todo   containedin=ALL TODO
         syntax keyword Sorry  containedin=ALL sorry
