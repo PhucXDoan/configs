@@ -17,22 +17,23 @@ exec "command! RC :e " . expand('<sfile>:p')
 command! E   :w | Explore
 command! TMP :e ~/tmp
 
-set nowrap                  " No line wrapping.
-set expandtab               " Expand \t into spaces.
-set softtabstop=4           " Amount of spaces per tab.
-set shiftwidth=4            " Amount of spaces per indent.
-set hlsearch                " Highlight search matches.
-set incsearch               " Go to the next search match as it is being typed.
-set autoindent              " Copy indent from previous line.
-set showcmd                 " This shows the amount of lines selected.
-set ruler                   " Show additional information at the bottom.
-set rulerformat=%(%=%l,%c%) " Show only line and column number of the cursor.
-set timeoutlen=0            " Remove the delay after <ESC>.
-set nrformats+=alpha        " Allow alphabetical characters to be incremented/decremented.
-set scrolloff=4             " Minimal number of screen lines to keep above and below the cursor.
-set shortmess-=S            " Show search count message when searching.
-set autoread                " Reread a file if it has changed on disk.
-set t_Co=256                " Allow 256 colors in terminal.
+set nowrap               " No line wrapping.
+set expandtab            " Expand \t into spaces.
+set softtabstop=4        " Amount of spaces per tab.
+set shiftwidth=4         " Amount of spaces per indent.
+set hlsearch             " Highlight search matches.
+set incsearch            " Go to the next search match as it is being typed.
+set autoindent           " Copy indent from previous line.
+set showcmd              " This shows the amount of lines selected.
+set ruler                " Show additional information at the bottom.
+set laststatus=2         " Show the file name.
+set rulerformat=%(%=%l%) " Show only line number of the cursor.
+set timeoutlen=0         " Remove the delay after <ESC>.
+set nrformats+=alpha     " Allow alphabetical characters to be incremented/decremented.
+set scrolloff=4          " Minimal number of screen lines to keep above and below the cursor.
+set shortmess-=S         " Show search count message when searching.
+set autoread             " Reread a file if it has changed on disk.
+set t_Co=256             " Allow 256 colors in terminal.
 
 " Use very-magic mode when searching.
 nnoremap / /\v
