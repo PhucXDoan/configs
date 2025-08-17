@@ -4,13 +4,13 @@
 set history filename ~/.gdb_history
 set history save on
 
-define hookpost-file
-    with pagination off -- focus cmd
-end
+# define hookpost-file
+#     with pagination off -- focus cmd
+# end
 
-define hook-next
-    refresh
-end
+# define hook-next
+#     refresh
+# end
 
 define hook-quit
     set confirm off

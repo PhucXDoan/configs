@@ -3,8 +3,8 @@
 
 let g:TARGET=""
 
-command! R :exec ":! clear && ./cli.py clean && ./cli.py build " . g:TARGET " && ./cli.py flash " . g:TARGET
-command! C :exec ":! clear && ./cli.py clean && ./cli.py build " . g:TARGET
+command! R :exec ":! clear && ./cli.py clean && ./cli.py build && ./cli.py flash " . g:TARGET
+command! C :exec ":! clear && ./cli.py clean && ./cli.py build "
 command! M :exec ":! clear && ./cli.py clean && ./cli.py build --metapreprocess-only"
 command! T :exec ":! clear && ./cli.py test"
 
@@ -49,7 +49,7 @@ function OnFileType()
     " C.
     "
 
-    if expand('%:e') == 'c' || expand('%:e') == 'h' || expand('%:e') == 'meta'
+    if expand('%:e') == 'jai' || expand('%:e') == 'c' || expand('%:e') == 'h' || expand('%:e') == 'meta'
         set syntax=off
         syntax match  Comment                            /\v\/\/.*$/
         syntax region Comment                            start=/\v\/\*/ end=/\v\*\//
@@ -91,11 +91,11 @@ function OnFileType()
     syntax match ExWhitespace /\v\t/   containedin=ALL " Lines containing tabs.
     syntax match ExWhitespace /\v\s+$/ containedin=ALL " Lines ending with whitespace.
 
-    if expand('%:e') == 'c' ||  expand('%:e') == 'h' || expand('%:e') == 'meta' ||  expand('%:e') == 'py'
+    if expand('%:e') == 'c' ||  expand('%:e') == 'h' || expand('%:e') == 'meta' || expand('%:e') == 'py' || expand('%:e') == 'txt'
         syntax match   Assert /\v(<(static_)?assert\w*|<ret(_\w*)?>|<panic>)/
+        syntax keyword Sorry  sorry
         syntax match   Tmp    containedin=ALL /\v<TMP(_)?\w*>*/
         syntax keyword Todo   containedin=ALL TODO
-        syntax keyword Sorry  containedin=ALL sorry
     endif
 
     "
