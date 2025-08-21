@@ -38,6 +38,9 @@ set t_Co=256             " Allow 256 colors in terminal.
 " Use very-magic mode when searching.
 nnoremap / /\v
 
+" Search using the previous selection.
+nnoremap L :<c-u>let @/=@"<cr>gvy:let [@/,@"]=[@",@/]<cr>/\V<c-r>=substitute(escape(@/,'/\'),'\n','\\n','g')<cr><cr>
+
 syntax enable         " Switch on syntax highlighting.
 colorscheme industry  " Theme.
 syntax sync fromstart " Makes region highlighting more reliable.
@@ -92,7 +95,7 @@ function OnFileType()
     syntax match ExWhitespace /\v\s+$/ containedin=ALL " Lines ending with whitespace.
 
     if expand('%:e') == 'c' ||  expand('%:e') == 'h' || expand('%:e') == 'meta' || expand('%:e') == 'py' || expand('%:e') == 'txt'
-        syntax match   Assert /\v(<(static_)?assert\w*|<ret(_\w*)?>|<panic>)/
+        syntax match   Assert /\v(<static_assert>|<static_assert_expr>|<assert>|<ret(_\w*)?>|<panic>)/
         syntax keyword Sorry  sorry
         syntax match   Tmp    containedin=ALL /\v<TMP(_)?\w*>*/
         syntax keyword Todo   containedin=ALL TODO
