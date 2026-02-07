@@ -3,7 +3,7 @@
 
 let g:TARGET=""
 
-command! R :exec ":! clear && ./cli.py clean && ./cli.py build && ./cli.py flash " . g:TARGET
+command! R :exec ":! clear && ./cli.py clean && ./cli.py build " . " && ./cli.py flash " . g:TARGET
 command! C :exec ":! clear && ./cli.py clean && ./cli.py build "
 command! M :exec ":! clear && ./cli.py clean && ./cli.py build --metapreprocess-only"
 command! T :exec ":! clear && ./cli.py test"
@@ -95,7 +95,7 @@ function OnFileType()
     syntax match ExWhitespace /\v\s+$/ containedin=ALL " Lines ending with whitespace.
 
     if expand('%:e') == 'c' ||  expand('%:e') == 'h' || expand('%:e') == 'meta' || expand('%:e') == 'py' || expand('%:e') == 'txt'
-        syntax match   Assert /\v(<static_assert>|<static_assert_expr>|<assert>|<ret(_\w*)?>|<panic>)/
+        syntax match   Assert /\v(<static_assert>|<static_assert_expr>|<assert>|<ret(_\w*)?>|<panic>|<return>|<goto>|<bug>)/
         syntax keyword Sorry  sorry
         syntax match   Tmp    containedin=ALL /\v<TMP(_)?\w*>*/
         syntax keyword Todo   containedin=ALL TODO
