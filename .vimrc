@@ -78,9 +78,9 @@ function OnFileType()
     endif
 
     if expand('%:e') == 'c' || expand('%:e') == 'h' || expand('%:e') == 'meta' || expand('%:e') == 'ld' || expand('%:e') == 'S'
-        syntax match Meta                                                       /\v^\s*(\/\*)?\s*(\#include>.*\n\s*)?(^\s*\/\*\s*\#meta>.*\n\s*)\_.{-}\*\//
-        syntax match MetaBody    contained containedin=Meta     contains=Assert /\v^\s*(\/\*)?\s*(\#include>.*\n\s*)?(^\s*\/\*\s*\#meta>.*\n\s*)@<=\s*\_.{-}\*\//
-        syntax match MetaComment contained containedin=MetaBody                 /\v(^|\s)\zs\#.*$/
+        syntax match Meta                                                            /\v^\s*(\/\*)?\s*(\#include>.*\n\s*)?(^\s*\/\*\s*\#meta>.*\n\s*)\_.{-}\*\//
+        syntax match MetaBody    contained containedin=Meta     contains=ControlFlow /\v^\s*(\/\*)?\s*(\#include>.*\n\s*)?(^\s*\/\*\s*\#meta>.*\n\s*)@<=\s*\_.{-}\*\//
+        syntax match MetaComment contained containedin=MetaBody                      /\v(^|\s)\zs\#.*$/
     endif
 
     if expand('%:e') == 'py'
@@ -95,10 +95,10 @@ function OnFileType()
     syntax match ExWhitespace /\v\s+$/ containedin=ALL " Lines ending with whitespace.
 
     if expand('%:e') == 'c' ||  expand('%:e') == 'h' || expand('%:e') == 'meta' || expand('%:e') == 'py' || expand('%:e') == 'txt'
-        syntax match   Assert /\v(<static_assert>|<static_assert_expr>|<assert>|<ret(_\w*)?>|<panic>|<return>|<goto>|<bug>)/
-        syntax keyword Sorry  sorry
-        syntax match   Tmp    containedin=ALL /\v<TMP(_)?\w*>*/
-        syntax keyword Todo   containedin=ALL TODO
+        syntax match   ControlFlow /\v(<return>|<goto>|<bug>)/
+        syntax keyword Sorry       sorry
+        syntax match   Tmp         containedin=ALL /\v<TMP(_)?\w*>*/
+        syntax keyword Todo        containedin=ALL TODO
     endif
 
     "
@@ -112,7 +112,7 @@ function OnFileType()
     highlight Meta         ctermfg=lightgreen   ctermbg=none
     highlight MetaBody     ctermfg=lightgreen   ctermbg=none
     highlight MetaComment  ctermfg=darkgreen    ctermbg=none
-    highlight Assert       ctermfg=yellow       ctermbg=none
+    highlight ControlFlow  ctermfg=yellow       ctermbg=none
     highlight Search       ctermfg=59           ctermbg=230
     highlight Tmp          ctermfg=black        ctermbg=yellow
     highlight Debug        ctermfg=darkgray     ctermbg=none
