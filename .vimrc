@@ -1,10 +1,11 @@
 " ~/.vimrc
-" source ~/Documents/configs/vimrc
+" source ~/Documents/configs/.vimrc
 
 let g:TARGET=""
 
 command! R :exec ":! clear && ./cli.py clean && ./cli.py build " . " && ./cli.py flash " . g:TARGET
 command! C :exec ":! clear && ./cli.py clean && ./cli.py build "
+command! A :exec ":! clear && ./cli.py clean && ./cli.py build "
 command! M :exec ":! clear && ./cli.py clean && ./cli.py build --metapreprocess-only"
 command! T :exec ":! clear && ./cli.py test"
 
@@ -57,7 +58,6 @@ function OnFileType()
         syntax match  Comment                            /\v\/\/.*$/
         syntax region Comment                            start=/\v\/\*/ end=/\v\*\//
         syntax region String  transparent                start=/\v\"/   end=/\v\"/
-        syntax match  Debug   containedin=ALLBUT,Comment /\v<(_)*DEBUG(_)?\w*/
     endif
 
     "
@@ -95,10 +95,11 @@ function OnFileType()
     syntax match ExWhitespace /\v\s+$/ containedin=ALL " Lines ending with whitespace.
 
     if expand('%:e') == 'c' ||  expand('%:e') == 'h' || expand('%:e') == 'meta' || expand('%:e') == 'py' || expand('%:e') == 'txt'
-        syntax match   ControlFlow /\v(<return>|<goto>|<bug>)/
-        syntax keyword Sorry       sorry
-        syntax match   Tmp         containedin=ALL /\v<TMP(_)?\w*>*/
-        syntax keyword Todo        containedin=ALL TODO
+        syntax match   ControlFlow     /\v(<return>|<goto>|<bug>)/
+        syntax match   WeakControlFlow /\v(<sus>|<panic>)/
+        syntax keyword Sorry           sorry
+        syntax match   Tmp             containedin=ALL /\v<TMP(_)?\w*>*/
+        syntax keyword Todo            containedin=ALL TODO
     endif
 
     "
@@ -107,18 +108,18 @@ function OnFileType()
 
     highlight CursorLine ctermfg=none ctermbg=none ctermul=yellow cterm=underline
 
-    highlight ExWhitespace ctermfg=white        ctermbg=red
-    highlight Comment      ctermfg=cyan         ctermbg=none
-    highlight Meta         ctermfg=lightgreen   ctermbg=none
-    highlight MetaBody     ctermfg=lightgreen   ctermbg=none
-    highlight MetaComment  ctermfg=darkgreen    ctermbg=none
-    highlight ControlFlow  ctermfg=yellow       ctermbg=none
-    highlight Search       ctermfg=59           ctermbg=230
-    highlight Tmp          ctermfg=black        ctermbg=yellow
-    highlight Debug        ctermfg=darkgray     ctermbg=none
-    highlight Todo         ctermfg=black        ctermbg=magenta
-    highlight Sorry        ctermfg=white        ctermbg=darkred
-    highlight String       ctermfg=lightmagenta ctermbg=none
+    highlight ExWhitespace    ctermfg=white        ctermbg=red
+    highlight Comment         ctermfg=cyan         ctermbg=none
+    highlight Meta            ctermfg=lightgreen   ctermbg=none
+    highlight MetaBody        ctermfg=lightgreen   ctermbg=none
+    highlight MetaComment     ctermfg=darkgreen    ctermbg=none
+    highlight ControlFlow     ctermfg=yellow       ctermbg=none
+    highlight WeakControlFlow ctermfg=lightred     ctermbg=none
+    highlight Search          ctermfg=59           ctermbg=230
+    highlight Tmp             ctermfg=black        ctermbg=yellow
+    highlight Todo            ctermfg=black        ctermbg=magenta
+    highlight Sorry           ctermfg=white        ctermbg=darkred
+    highlight String          ctermfg=lightmagenta ctermbg=none
     syntax sync fromstart " Makes region highlighting more reliable.
 endfunction
 
