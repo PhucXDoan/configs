@@ -1,10 +1,13 @@
-" ~/.vimrc
-" source ~/Documents/configs/.vimrc
+" dofile(vim.fn.expand("~/Documents/configs/init.lua"))
 
 let g:TARGET=""
 
-command! R :exec ":! clear && ./cli.py clean && ./cli.py build " . " && ./cli.py flash " . g:TARGET
-command! C :exec ":! clear && ./cli.py clean && ./cli.py build "
+" command! R :exec ":! clear && ./cli.py clean && ./cli.py build " . " && ./cli.py flash " . g:TARGET
+" command! C :exec ":! clear && ./cli.py clean && ./cli.py build "
+
+command! R :exec ":! clear && ./script.py upload"
+command! C :exec ":! clear && ./script.py compile"
+
 command! A :exec ":! clear && ./cli.py clean && ./cli.py build "
 command! M :exec ":! clear && ./cli.py clean && ./cli.py build --metapreprocess-only"
 command! T :exec ":! clear && ./cli.py test"
@@ -94,7 +97,7 @@ function OnFileType()
     syntax match ExWhitespace /\v\t/   containedin=ALL " Lines containing tabs.
     syntax match ExWhitespace /\v\s+$/ containedin=ALL " Lines ending with whitespace.
 
-    if expand('%:e') == 'c' ||  expand('%:e') == 'h' || expand('%:e') == 'meta' || expand('%:e') == 'py' || expand('%:e') == 'txt'
+    if expand('%:e') == '.ino' ||  expand('%:e') == 'c' ||  expand('%:e') == 'h' || expand('%:e') == 'meta' || expand('%:e') == 'py' || expand('%:e') == 'txt'
         syntax match   ControlFlow     /\v(<return>|<goto>|<bug>)/
         syntax match   WeakControlFlow /\v(<sus>|<panic>)/
         syntax keyword Sorry           sorry
