@@ -1,3 +1,10 @@
+local function apply_trailing_space()
+  for _, match in ipairs(vim.fn.getmatches()) do
+    if match.group == "TrailingSpace" then return end
+  end
+  vim.fn.matchadd("TrailingSpace", [[\s\+$]])
+end
+
 local function apply_config()
   vim.opt.scrolloff   = 3
   vim.opt.tabstop     = 4
@@ -23,8 +30,12 @@ end
 
 apply_config()
 
+vim.api.nvim_create_autocmd({ "WinEnter", "BufWinEnter" }, {
+  callback = apply_trailing_space,
+})
+
 vim.api.nvim_create_user_command("RR", function()
-  vim.cmd("source " .. vim.fn.stdpath("config") .. "/init.lua")
+  vim.cmd("source " .. "C:/Users/Phuc/Documents/configs/init.lua")
   local current_win = vim.api.nvim_get_current_win()
   for _, win in ipairs(vim.api.nvim_list_wins()) do
     vim.api.nvim_set_current_win(win)
@@ -35,7 +46,7 @@ vim.api.nvim_create_user_command("RR", function()
 end, {})
 
 vim.api.nvim_create_user_command("RC", function()
-  vim.cmd("edit " .. vim.fn.stdpath("config") .. "/init.lua")
+  vim.cmd("edit " .. "C:/Users/Phuc/Documents/configs/init.lua")
 end, {})
 
 vim.api.nvim_set_hl(0, "OdinError", { bg = "#FF0000" })
@@ -52,7 +63,7 @@ end
 
 vim.api.nvim_create_augroup("OdinErrorClear", { clear = true })
 
-vim.api.nvim_create_user_command("R", function()
+local function odin_build(run_gwiz)
   vim.cmd("silent! wall")
   clear_odin_error()
 
@@ -88,7 +99,7 @@ vim.api.nvim_create_user_command("R", function()
                 break
               end
             end
-          else
+          elseif run_gwiz then
             vim.cmd("set splitright | vsplit | enew")
             vim.fn.termopen({ "pwsh", "-NoLogo", "-NoProfile", "-Command", ".\\gwiz.exe" }, { cwd = cwd })
             vim.cmd("startinsert")
@@ -97,7 +108,10 @@ vim.api.nvim_create_user_command("R", function()
       end,
     }
   )
-end, {})
+end
+
+vim.api.nvim_create_user_command("R", function() odin_build(true)  end, {})
+vim.api.nvim_create_user_command("C", function() odin_build(false) end, {})
 
 
 local function levenshtein(a, b)
@@ -123,7 +137,8 @@ local function jump_to(r)
   vim.cmd("normal! zz")
 end
 
-vim.keymap.set("n", "<Tab>", function()
+vim.keymap.set("n", "\\", function()
+  vim.cmd("silent! wall")
   local input = vim.fn.input("goto: ")
   if input == "" then return end
 
@@ -147,7 +162,7 @@ vim.keymap.set("n", "<Tab>", function()
   local function show_menu(items)
     local menu = {}
     for i, r in ipairs(items) do
-      table.insert(menu, string.format("%d) %s:%d  %s", i, vim.fn.fnamemodify(r.file, ":~:."), r.lnum, vim.trim(r.text)))
+      table.insert(menu, string.format("%d) %s", i, vim.trim(r.text)))
     end
     local choice = vim.fn.inputlist(menu)
     if choice >= 1 and choice <= #items then
@@ -234,11 +249,56 @@ vim.api.nvim_create_autocmd({ "WinLeave", "BufLeave" }, {
 })
 
 vim.api.nvim_set_hl(0, "TodoHighlight", { bg = "#FF00FF", fg = "#FFFFFF", bold = true })
-vim.fn.matchadd("TodoHighlight", [[\<TODO\>]])
+vim.api.nvim_set_hl(0, "TmpHighlight",  { bg = "#FFFF00", fg = "#000000", bold = true })
+
+local function apply_todo_highlight()
+  for _, match in ipairs(vim.fn.getmatches()) do
+    if match.group == "TodoHighlight" then return end
+  end
+  vim.fn.matchadd("TodoHighlight", [[\<TODO\>]])
+end
+
+local function apply_tmp_highlight()
+  for _, match in ipairs(vim.fn.getmatches()) do
+    if match.group == "TmpHighlight" then return end
+  end
+  vim.fn.matchadd("TmpHighlight", [[\<TMP\(_\w\+\)\?\>]])
+end
+
+apply_todo_highlight()
+apply_tmp_highlight()
+
+vim.api.nvim_create_autocmd({ "WinEnter", "BufWinEnter" }, {
+  callback = function()
+    apply_todo_highlight()
+    apply_tmp_highlight()
+  end,
+})
 
 vim.api.nvim_set_hl(0, "OdinComment",     { fg = "#00FFFF" })
 vim.api.nvim_set_hl(0, "OdinControlFlow", { fg = "#FF8800", bold = true })
 vim.api.nvim_set_hl(0, "OdinLiteral",     { fg = "#B6E3CE" })
+
+local function apply_odin_syntax(force)
+  if not force and vim.b.odin_syntax_applied then return end
+  vim.cmd([[
+    syntax clear
+    syntax region  OdinLiteral start=/"/ skip=/\\"/ end=/"/
+    syntax region  OdinLiteral start=/'/ skip=/\\'/ end=/'/
+    syntax region  OdinLiteral start=/`/            end=/`/
+    syntax keyword OdinLiteral true false nil
+    syntax match   OdinLiteral "\<\d\(\d\|_\)*\(\.\d\+\)\?\([eE][+-]\?\d\+\)\?\>"
+    syntax match   OdinLiteral "\<0x[0-9a-fA-F_]\+\>"
+    syntax match   OdinLiteral "\<0o[0-7_]\+\>"
+    syntax match   OdinLiteral "\<0b[01_]\+\>"
+    syntax match   OdinComment "//.*$" containedin=ALL
+    syntax keyword OdinControlFlow return break continue or_return or_break or_continue fallthrough defer goto
+    syntax match   OdinControlFlow "\<defer_\w\+"
+    syntax match   OdinComment "//.*$" containedin=ALL
+  ]])
+  vim.b.odin_syntax_applied = true
+end
+
 vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
   pattern = "*.odin",
   callback = function()
@@ -270,10 +330,14 @@ vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
     end, { buffer = true })
 
     vim.keymap.set("v", "ca", function()
+      -- Exit visual first so '< and '> marks are committed
+      vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<Esc>", true, false, true), "x", true)
       local s = vim.fn.line("'<")
       local e = vim.fn.line("'>")
       -- Grab indent before any replacements
-      local indent = vim.api.nvim_buf_get_lines(0, s - 1, s, false)[1]:match("^(%s*)")
+      local first_line = vim.api.nvim_buf_get_lines(0, s - 1, s, false)[1]
+      if not first_line then return end
+      local indent = first_line:match("^(%s*)")
       -- Collect all expanded lines first (bottom-up to preserve row numbers)
       local replacements = {}
       for row = e, s, -1 do
@@ -293,21 +357,19 @@ vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
       })
       vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<Esc>", true, false, true), "n", false)
     end, { buffer = true })
-    vim.cmd([[
-      syntax clear
-      syntax region  OdinLiteral start=/"/ skip=/\\"/ end=/"/
-      syntax region  OdinLiteral start=/'/ skip=/\\'/ end=/'/
-      syntax region  OdinLiteral start=/`/            end=/`/
-      syntax keyword OdinLiteral true false nil
-      syntax match   OdinLiteral "\<\d\+\(\.\d\+\)\?\([eE][+-]\?\d\+\)\?\>"
-      syntax match   OdinLiteral "\<0x[0-9a-fA-F]\+\>"
-      syntax match   OdinLiteral "\<0o[0-7]\+\>"
-      syntax match   OdinLiteral "\<0b[01]\+\>"
-      syntax match   OdinComment "//.*$" containedin=ALL
-      syntax keyword OdinControlFlow return break continue or_return or_break or_continue fallthrough defer goto
-      syntax match   OdinComment "//.*$" containedin=ALL
-    ]])
+    apply_odin_syntax(true)
+  end,
+})
+
+vim.api.nvim_create_autocmd("WinEnter", {
+  callback = function()
+    if vim.bo.filetype == "odin" then
+      apply_odin_syntax(false)
+    end
   end,
 })
 
 vim.cmd([[cnoreabbrev E Explore]])
+
+vim.keymap.set("n", "/", "/\\v", { noremap = true })
+vim.keymap.set("n", "?", "?\\v", { noremap = true })
