@@ -63,6 +63,24 @@ end
 
 vim.api.nvim_create_augroup("OdinErrorClear", { clear = true })
 
+local function open_runner(cmd, cwd)
+  vim.cmd("set splitright | vsplit | enew")
+  local win = vim.api.nvim_get_current_win()
+  vim.fn.termopen(cmd, {
+    cwd = cwd,
+    on_exit = function(_, code)
+      if code == 0 then
+        vim.schedule(function()
+          if vim.api.nvim_win_is_valid(win) then
+            vim.api.nvim_win_close(win, true)
+          end
+        end)
+      end
+    end,
+  })
+  vim.cmd("startinsert")
+end
+
 local function odin_build(run_gwiz)
   vim.cmd("silent! wall")
   clear_odin_error()
@@ -101,9 +119,7 @@ local function odin_build(run_gwiz)
             end
           elseif run_gwiz then
             local exe = vim.fn.fnamemodify(cwd, ":t") .. ".exe"
-            vim.cmd("set splitright | vsplit | enew")
-            vim.fn.termopen({ "pwsh", "-NoLogo", "-NoProfile", "-Command", ".\\" .. exe }, { cwd = cwd })
-            vim.cmd("startinsert")
+            open_runner({ "pwsh", "-NoLogo", "-NoProfile", "-Command", ".\\" .. exe }, cwd)
           end
         end)
       end,
@@ -111,7 +127,65 @@ local function odin_build(run_gwiz)
   )
 end
 
-vim.api.nvim_create_user_command("R", function() odin_build(true)  end, {})
+local r_mode = nil  -- nil = not yet chosen; "odin" or a python file path
+
+local function run_r()
+  if r_mode == nil then
+    local input = vim.fn.input("R mode (odin / <python path>): ")
+    if input == "" then return end
+    r_mode = input
+  end
+
+  if r_mode == "odin" then
+    odin_build(true)
+  else
+    vim.cmd("silent! wall")
+    clear_odin_error()
+    local path = r_mode
+    local cwd  = vim.fn.getcwd()
+    local lines = {}
+    vim.fn.jobstart(
+      { "pwsh", "-NoLogo", "-NoProfile", "-Command", "python -m mypy . --disallow-untyped-defs" },
+      {
+        cwd = cwd,
+        stderr_buffered = true,
+        stdout_buffered = true,
+        on_stderr = function(_, data) vim.list_extend(lines, data) end,
+        on_stdout = function(_, data) vim.list_extend(lines, data) end,
+        on_exit = function(_, code)
+          vim.schedule(function()
+            if code ~= 0 then
+              for _, line in ipairs(lines) do
+                local file, row = line:match("^(.-)%:(%d+)%:%s*error%:")
+                if file then
+                  vim.cmd("edit " .. vim.fn.fnameescape(file))
+                  vim.api.nvim_win_set_cursor(0, { tonumber(row), 0 })
+                  vim.cmd("normal! zz")
+                  odin_error_match_id = vim.fn.matchadd("OdinError", "\\%" .. row .. "l")
+                  vim.api.nvim_create_autocmd("CursorMoved", {
+                    group = "OdinErrorClear",
+                    buffer = 0,
+                    once = true,
+                    callback = clear_odin_error,
+                  })
+                  vim.defer_fn(function()
+                    vim.api.nvim_echo({{ table.concat(lines, "\n"), "ErrorMsg" }}, true, {})
+                  end, 10)
+                  break
+                end
+              end
+            else
+              open_runner({ "pwsh", "-NoLogo", "-NoProfile", "-Command", "python " .. path }, cwd)
+            end
+          end)
+        end,
+      }
+    )
+  end
+end
+
+vim.api.nvim_create_user_command("R",      run_r,                    {})
+vim.api.nvim_create_user_command("RReset", function() r_mode = nil end, {})
 vim.api.nvim_create_user_command("C", function() odin_build(false) end, {})
 
 
