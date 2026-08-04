@@ -100,8 +100,9 @@ local function odin_build(run_gwiz)
               end
             end
           elseif run_gwiz then
+            local exe = vim.fn.fnamemodify(cwd, ":t") .. ".exe"
             vim.cmd("set splitright | vsplit | enew")
-            vim.fn.termopen({ "pwsh", "-NoLogo", "-NoProfile", "-Command", ".\\gwiz.exe" }, { cwd = cwd })
+            vim.fn.termopen({ "pwsh", "-NoLogo", "-NoProfile", "-Command", ".\\" .. exe }, { cwd = cwd })
             vim.cmd("startinsert")
           end
         end)
