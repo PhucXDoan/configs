@@ -80,6 +80,9 @@ local function open_runner(cmd, cwd)
 end
 
 local function apply_config()
+  vim.g.netrw_liststyle = 3
+  vim.g.netrw_banner = 0
+
   vim.opt.scrolloff = 3
   vim.opt.tabstop = 4
   vim.opt.shiftwidth = 4
@@ -225,11 +228,16 @@ end
 
 local function run_r()
   if r_mode == nil then
-    local input = vim.fn.input("R mode (odin / <python path>): ")
-    if input == "" then
-      return
+    local odin_files = vim.fn.glob(vim.fn.getcwd() .. "/*.odin", false, true)
+    if #odin_files > 0 then
+      r_mode = "odin"
+    else
+      local input = vim.fn.input("R mode (odin / <python path>): ")
+      if input == "" then
+        return
+      end
+      r_mode = input
     end
-    r_mode = input
   end
 
   if r_mode == "odin" then
@@ -520,6 +528,9 @@ vim.api.nvim_create_autocmd("VimEnter", {
 vim.api.nvim_create_autocmd({ "WinEnter", "BufEnter" }, {
   callback = function()
     vim.opt_local.cursorline = true
+    vim.bo.smartindent = false
+    vim.bo.cindent = false
+    vim.bo.indentexpr = ""
   end,
 })
 
