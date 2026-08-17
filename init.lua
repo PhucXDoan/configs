@@ -113,7 +113,7 @@ local function apply_config()
 end
 
 local function reload_config()
-  vim.cmd("source " .. "C:/Users/Phuc/Documents/configs/init.lua")
+  vim.cmd("source " .. "~/Documents/configs/init.lua")
 
   local current_win = vim.api.nvim_get_current_win()
   for _, win in ipairs(vim.api.nvim_list_wins()) do
@@ -125,7 +125,7 @@ local function reload_config()
 end
 
 local function edit_config()
-  vim.cmd("edit " .. "C:/Users/Phuc/Documents/configs/init.lua")
+  vim.cmd("edit " .. "~/Documents/configs/init.lua")
 end
 
 local function handle_odin_build_error(lines)
