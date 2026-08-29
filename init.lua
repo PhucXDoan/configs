@@ -93,7 +93,9 @@ local function apply_config()
   vim.opt.smartindent = false
   vim.opt.cindent = false
   vim.opt.indentexpr = ""
-  vim.opt.shell = "pwsh"
+  if vim.fn.has("win32") == 1 then
+      vim.opt.shell = "pwsh"
+  end
   vim.opt.shellcmdflag = "-NoLogo -NoProfile -Command"
   vim.opt.cursorline = true
 
