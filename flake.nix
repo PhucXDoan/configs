@@ -8,7 +8,7 @@
   };
 
   outputs = { self, nixpkgs, nixos-wsl, ... }: {
-    nixosConfigurations.phucxdoan = nixpkgs.lib.nixosSystem {
+    nixosConfigurations.nixos = nixpkgs.lib.nixosSystem {
       system = "x86_64-linux";
       modules = [
         nixos-wsl.nixosModules.wsl
