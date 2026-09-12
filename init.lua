@@ -554,3 +554,7 @@ vim.api.nvim_create_autocmd("WinEnter", {
     end
   end,
 })
+
+vim.api.nvim_create_user_command('TMP', function()
+  vim.cmd('split ' .. vim.fn.expand('~/TMP'))
+end, {})
