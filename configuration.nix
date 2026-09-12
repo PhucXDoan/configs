@@ -6,6 +6,10 @@
     "flakes"
   ];
 
+  environment.sessionVariables = {
+    XDG_RUNTIME_DIR = "/mnt/wslg/runtime-dir";
+  };
+
   imports = [
   ];
 
@@ -15,6 +19,7 @@
   system.stateVersion = "26.05";
 
   environment.systemPackages = with pkgs; [
+    wl-clipboard
   ];
 
   programs.git = {
