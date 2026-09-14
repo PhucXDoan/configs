@@ -16,6 +16,8 @@
   wsl.enable = true;
   wsl.defaultUser = "nixos";
 
+  boot.kernel.sysctl."kernel.core_pattern" = "core";
+
   system.stateVersion = "26.05";
 
   environment.systemPackages = with pkgs; [

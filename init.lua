@@ -558,3 +558,10 @@ vim.api.nvim_create_autocmd("WinEnter", {
 vim.api.nvim_create_user_command('TMP', function()
   vim.cmd('split ' .. vim.fn.expand('~/TMP'))
 end, {})
+
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = "*",
+  callback = function()
+    vim.opt.formatoptions:remove({ "c", "r", "o" })
+  end,
+})
